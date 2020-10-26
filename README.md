@@ -9,6 +9,8 @@ Warstwa back-end aplikacji realizującej projekt bauhinia.
 ## Prototyp
 [Prototyp z przejściami i komentarzem.](https://www.figma.com/proto/bWQcCu0oyINNYOpwzYLUJk/baUHInia?node-id=1%3A2&scaling=min-zoom)
 ## Dokumentacja UML
+ - [Schemat przypadków użycia diagram](https://drive.google.com/file/d/1c__wzrMUO9CvHcKrnbMK5Bi-dVW4CVoF/view?usp=sharing)
+ - [Schemat przypadków uzycia opis](https://tulodz-my.sharepoint.com/:w:/g/personal/203397_edu_p_lodz_pl/ERo7dqVIcopMvTmSuVMmC-0BmoE1jLfLnOCESvNYN7Dv-g?e=aGdwlG)
 
 ## Schemat kolorów
 
