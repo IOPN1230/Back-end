@@ -16,6 +16,11 @@ Warstwa back-end aplikacji realizującej projekt bauhinia.
  - [Prezentacja](https://drive.google.com/file/d/1RH93QxIK4HJ6j_dJj_1u-Tffxm4fcVvp/view?usp=sharing)
 
 ## Schemat kolorów
+ - ![#ff0054](https://via.placeholder.com/15/ff0054/000000?text=+) `#ff0054`
+ - ![#9E0059](https://via.placeholder.com/15/9E0059/000000?text=+) `#9E0059`
+ - ![#390099](https://via.placeholder.com/15/390099/000000?text=+) `#390099`
+ - ![#E9E9E9](https://via.placeholder.com/15/E9E9E9/000000?text=+) `#E9E9E9`
+ - ![#FFFFFF](https://via.placeholder.com/15/FFFFFF/000000?text=+) `#FFFFFF`
 
 ## Harmonogram prac
 
