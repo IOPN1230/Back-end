@@ -33,4 +33,5 @@ Warstwa back-end aplikacji realizującej projekt bauhinia.
 
 ## Przydatne linki
 - [Prezentacja modułu logowania](https://tulodz-my.sharepoint.com/:b:/g/personal/224384_edu_p_lodz_pl/EUDMAxZqo1RDrxcH5jxTQaABIq0NjnNEZ08n_gkGOqP0XQ?e=Gl0WVQ)
+- [Prezentacja modułu obliczen](https://drive.google.com/file/d/1ikZxa8_dRIF9DwbBTgBBLTBS46u9eZ68/view?usp=sharing)
 
