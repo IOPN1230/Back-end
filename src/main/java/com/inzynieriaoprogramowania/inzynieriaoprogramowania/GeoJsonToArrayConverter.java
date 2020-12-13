@@ -1,6 +1,7 @@
 package com.inzynieriaoprogramowania.inzynieriaoprogramowania;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.inzynieriaoprogramowania.inzynieriaoprogramowania.service.calculations.Place;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -52,5 +53,62 @@ public class GeoJsonToArrayConverter {
             polygons.add(shape);
         }
         return polygons;
+    }
+    
+    public ArrayList<Point> getAllPoints(JsonNode map)
+    {
+    	ArrayList<Point> points = new ArrayList<>();
+        JsonNode features = map.path("features");
+        Iterator<JsonNode> featuresIterator = features.iterator();
+        while(featuresIterator.hasNext()){
+            JsonNode figure = featuresIterator.next();
+            JsonNode coordinates = figure.path("geometry").path("coordinates");
+            Iterator<JsonNode> coordinatesIterator = coordinates.iterator();
+            while(coordinatesIterator.hasNext()){
+            	JsonNode point = coordinatesIterator.next();
+            	//TODO: Make the next line construct Point(x,y) by parsing the X and Y value from JSON point coordinates properly
+            	points.add(new Point(point.asDouble(),point.asDouble()));
+            }
+        }
+        return points;
+    }
+    
+    public ArrayList<ArrayList<Place>> createAreaMap() {
+    	ArrayList<ArrayList<Place>> places = new ArrayList<ArrayList<Place>>();
+    	
+    	for(Double shiftY = 51.857411; shiftY > 51.693498 ; shiftY -= 0.000180)
+    	{
+    		places.add(new ArrayList<Place>());
+    		ArrayList<Place> current = places.get(places.size() - 1);
+    		for(Double shiftX = 19.334416; shiftX < 19.592922; shiftX += 0.000290 )
+    		{
+    			current.add(new Place(0.5,0.5,0.5));
+    		}
+    	}
+    	System.out.print("Rozmiar kolumny: " + places.size() + ", Rozmiar wiersza: " + places.get(0).size());
+		return places;
+    	
+    }
+    
+    public ArrayList<ArrayList<Place>> modifyPlaces(ArrayList<ArrayList<Place>> placesArray,ArrayList<Point> pointsArray) {
+    	for(Point point : pointsArray)
+    	{
+    		for(ArrayList<Place> places : placesArray)
+    		{
+    			for(Place place: places)
+    			{
+    				//TODO: create fields X and Y in Place.class
+    				if(point.getX() > place.getX() && point.getX() < place.getX() + 0.000180)
+        			{
+        				if(point.getY() < place.getY() && point.getY() > place.getY() - 0.000180 )
+        				{
+        					//Eksperymntalne ustawienie wartosci emisji na 1 w obszarze, w ktorym jest jakis punkt
+        					place.emission = 1;
+        				}
+        			}
+    			}
+    		}
+    	}
+    	return placesArray;
     }
 }

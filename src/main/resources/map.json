@@ -1,34 +1,32 @@
 { "type": "FeatureCollection",
   "features": [
     { "type": "Feature",
-      "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
+      "geometry": {"type": "Point", "coordinates": [19.456494, 51.759138]},
       "properties": {"prop0": "value0"}
     },
     { "type": "Feature",
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [102.0, 0.0], [103.0, 1.0], [104.0, 0.0], [105.0, 1.0]
-        ]
-      },
-      "properties": {
-        "prop0": "value0",
-        "prop1": 0.0
-      }
+      "geometry": {"type": "Point", "coordinates": [19.456794, 51.759338]},
+      "properties": {"prop0": "value0"}
     },
     { "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [ [100.0, 0.0], [101.0, 0.0], [101.0, 1.0],
-            [100.0, 1.0], [100.0, 0.0] ]
-        ]
-
-      },
-      "properties": {
-        "prop0": "value0",
-        "prop1": {"this": "that"}
-      }
+      "geometry": {"type": "Point", "coordinates": [19.457094, 51.759538]},
+      "properties": {"prop0": "value0"}
+    },
+    { "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [19.457394, 51.759738]},
+      "properties": {"prop0": "value0"}
+    },
+    { "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [19.457694, 51.759938]},
+      "properties": {"prop0": "value0"}
+    },
+    { "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [19.457994, 51.760138]},
+      "properties": {"prop0": "value0"}
+    },
+    { "type": "Feature",
+      "geometry": {"type": "Point", "coordinates": [19.458294, 51.760338]},
+      "properties": {"prop0": "value0"}
     }
   ]
 }
