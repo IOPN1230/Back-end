@@ -11,7 +11,7 @@ public class HeatMapAnalyser {
         //TODO:implement this function
         int sizeX = areaMap.getArea().length;
         int sizeY = areaMap.getArea()[0].length;
-        return new HeatMapSolutions(new Double[sizeX][sizeY]);
+        return new HeatMapSolutions(new double[sizeX][sizeY]);
     }
 
     public Configuration getConfiguration() {

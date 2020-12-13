@@ -3,7 +3,7 @@ package com.inzynieriaoprogramowania.inzynieriaoprogramowania.service.calculatio
 public class HeatMapSolutions {
     public double[][] heatArray;
 
-    public HeatMapSolutions(Double[][] heatArray) {
+    public HeatMapSolutions(double[][] heatArray) {
         this.heatArray = heatArray;
     }
 }
