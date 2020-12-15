@@ -61,14 +61,20 @@ public class GeoJsonToArrayConverter {
         JsonNode features = map.path("features");
         Iterator<JsonNode> featuresIterator = features.iterator();
         while(featuresIterator.hasNext()){
+        	int i = 1;
             JsonNode figure = featuresIterator.next();
             JsonNode coordinates = figure.path("geometry").path("coordinates");
-            Iterator<JsonNode> coordinatesIterator = coordinates.iterator();
+            JsonNode x = coordinates.get(0);
+            JsonNode y = coordinates.get(1);
+            /*Iterator<JsonNode> coordinatesIterator = coordinates.iterator();
             while(coordinatesIterator.hasNext()){
-            	JsonNode point = coordinatesIterator.next();
+            	System.out.print(i);
+            	i++;
+            	pointX = coordinatesIterator.next();
+            	pointY = coordinatesIterator.next();
             	//TODO: Make the next line construct Point(x,y) by parsing the X and Y value from JSON point coordinates properly
-            	points.add(new Point(point.asDouble(),point.asDouble()));
-            }
+            }*/
+            points.add(new Point(x.asDouble(),y.asDouble()));
         }
         return points;
     }
@@ -76,13 +82,13 @@ public class GeoJsonToArrayConverter {
     public ArrayList<ArrayList<Place>> createAreaMap() {
     	ArrayList<ArrayList<Place>> places = new ArrayList<ArrayList<Place>>();
     	
-    	for(Double shiftY = 51.857411; shiftY > 51.693498 ; shiftY -= 0.000180)
+    	for(double shiftY = 51.857411; shiftY > 51.693498 ; shiftY -= 0.000180)
     	{
     		places.add(new ArrayList<Place>());
     		ArrayList<Place> current = places.get(places.size() - 1);
-    		for(Double shiftX = 19.334416; shiftX < 19.592922; shiftX += 0.000290 )
+    		for(double shiftX = 19.334416; shiftX < 19.592922; shiftX += 0.000290 )
     		{
-    			current.add(new Place(0.5,0.5,0.5));
+    			current.add(new Place(0.0,0.0,0.0,shiftX,shiftY));
     		}
     	}
     	System.out.print("Rozmiar kolumny: " + places.size() + ", Rozmiar wiersza: " + places.get(0).size());
@@ -100,13 +106,21 @@ public class GeoJsonToArrayConverter {
     				//TODO: create fields X and Y in Place.class
     				if(point.getX() > place.getX() && point.getX() < place.getX() + 0.000180)
         			{
-        				if(point.getY() < place.getY() && point.getY() > place.getY() - 0.000180 )
+        				if(point.getY() < place.getY() && point.getY() > place.getY() - 0.000290 )
         				{
         					//Eksperymntalne ustawienie wartosci emisji na 1 w obszarze, w ktorym jest jakis punkt
-        					place.emission = 1;
+        					place.emission = 1.0;
+        					System.out.println("Punkt na "+ place.getX() + ", " + place.getY());
         				}
         			}
     			}
+    		}
+    	}
+    	for(int i=0;i<placesArray.size();i++)
+    	{
+    		for(int j=0;j<placesArray.get(i).size();j++)
+    		{
+    			if(placesArray.get(i).get(j).emission == 1.0 ) System.out.println(i +", "+j);
     		}
     	}
     	return placesArray;
