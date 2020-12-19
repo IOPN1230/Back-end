@@ -44,8 +44,6 @@ public class GeoJsonToArrayConverter {
                     Iterator<JsonNode> it = point.elements();
                     Double coordinateX = it.next().asDouble();
                     Double coordinateY = it.next().asDouble();
-                    //System.out.println(coordinateX);
-                    //System.out.println(coordinateY);
                     shape.getCoordinatesX().add(coordinateX);
                     shape.getCoordinatesY().add(coordinateY);
                 }

@@ -17,6 +17,7 @@ import com.inzynieriaoprogramowania.inzynieriaoprogramowania.service.calculation
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 @Service
 public class HeatMapService {
@@ -26,6 +27,7 @@ public class HeatMapService {
     ArrayList<ArrayList<Place>> placesArray;
     ArrayList<ArrayList<Place>> modifiedPlacesArray;
     HeatMapSolutions heatMapSolutions;
+
 
     public HeatMapService(ResourceLoader resourceLoader) {
         this.resourceLoader = resourceLoader;
@@ -60,6 +62,23 @@ public class HeatMapService {
 		//I rozumiem, ze mamy zwrocic AreaMap (czyli moze po prostu ArrayList<ArrayList<>> ? )
 		Place area[][] = this.convertArrayListToArray(modifiedPlacesArray);
 		AreaMap areaMap = new AreaMap(area, heatMapSolutions);
+
+		//Test of converter start
+        double[][] testArray = new double[500][500];
+        Random rand = new Random();
+        for(int i = 0; i < 500; i++){
+            for(int j = 0; j < 500; j++) {
+                //TODO: Replace rand.nextDouble() with values from kernel
+                //TODO: Move below conversions to SolutionsToBitmapConverter
+                testArray[i][j]= 60 * rand.nextDouble(); //rangeMin + (rangeMax - rangeMin) * rand.nextDouble();
+                testArray[i][j] /= 360; //Convert hue from HSL 0-360 range to 0-1 range
+            }
+        }
+        HeatMapSolutions heatMapSolutionsTest = new HeatMapSolutions(testArray);
+        SolutionsToBitmapConverter solutionsToBitmapConverter = new SolutionsToBitmapConverter(heatMapSolutionsTest);
+        solutionsToBitmapConverter.createBitmap();
+        //Test of converter end
+
         return areaMap;
     }
     //Konwersja z arrayList na tablice dwuwymiarowa, wykorzystywane to bedzie wg preferencji obliczen
