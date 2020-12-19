@@ -38,8 +38,15 @@ public class SolutionsToBitmapConverter {
         return 0xFF000000 | red | green | blue; //0xFF000000 for 100% Alpha. Bitwise OR everything together.
     }
 
+    private void solutionsToHue(){
+        for(int i = 0; i < this.heatMapSolutions.heatArray.length; i++){
+            for(int j = 0; j < this.heatMapSolutions.heatArray[0].length; j++){
+                this.heatMapSolutions.heatArray[i][j] *= 1.0/6; //to convert from 0-1 values to 0-0.167 values, represeinting our red/orange/yellow hue values
+            }
+        }
+    }
 
-    private static double hue2rgb(double p, double q, double h) {
+    private static double hue2rgb(double p, double q, double h) { //just ready converter from internet
         if (h < 0) {
             h += 1;
         }
@@ -63,7 +70,7 @@ public class SolutionsToBitmapConverter {
         return p;
     }
 
-    static public int[] hslColor(double h, double s, double l) {
+    static public int[] hslColor(double h, double s, double l) { //ready converter from HSL to RGB array
         double q, p, r, g, b;
 
         if (s == 0) {
@@ -108,11 +115,9 @@ public class SolutionsToBitmapConverter {
     }
 
     public BufferedImage createBitmap(){
+        solutionsToHue();
         BufferedImage bufferedImage = new BufferedImage(this.width,this.height,BufferedImage.TYPE_INT_RGB);
         int[] res = arraylistToArray();
-        for(int i = 0; i < res.length; i++){
-            System.out.println(res[i]);
-        }
         bufferedImage.setRGB(0, 0, width, height, res, 0, width);
         try {
             ImageIO.write(bufferedImage, "jpg", new File("/home/piotr/test.jpg"));

@@ -70,8 +70,7 @@ public class HeatMapService {
             for(int j = 0; j < 500; j++) {
                 //TODO: Replace rand.nextDouble() with values from kernel
                 //TODO: Move below conversions to SolutionsToBitmapConverter
-                testArray[i][j]= 60 * rand.nextDouble(); //rangeMin + (rangeMax - rangeMin) * rand.nextDouble();
-                testArray[i][j] /= 360; //Convert hue from HSL 0-360 range to 0-1 range
+                testArray[i][j]= rand.nextDouble();
             }
         }
         HeatMapSolutions heatMapSolutionsTest = new HeatMapSolutions(testArray);
