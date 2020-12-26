@@ -10,10 +10,18 @@ public class HeatMapSolutions {
     //copy data not reference
     public void overwrite(HeatMapSolutions heatMap) {
         for(int i = 0; i < heatArray.length; i++){
-            for(int j = 0; j < heatArray[i].length; j++){
-                this.heatArray[i][j] = heatMap.heatArray[i][j];
+            System.arraycopy(heatMap.heatArray[i], 0, this.heatArray[i], 0, heatArray[i].length);
+        }
+    }
+
+    public boolean validate(){
+        int height = this.getHeight();
+        for (double[] column : heatArray) {
+            if (column.length != height) {
+                return true;
             }
         }
+        return false;
     }
 
     public int getWidth(){return heatArray.length;}

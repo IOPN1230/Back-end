@@ -1,5 +1,7 @@
 package com.inzynieriaoprogramowania.inzynieriaoprogramowania.service.calculations;
 
+import java.lang.Math;
+
 public class HeatMapAnalyser {
     private Configuration configuration;
 
@@ -8,6 +10,11 @@ public class HeatMapAnalyser {
     }
 
     public HeatMapSolutions calculateHeatMap(AreaMap areaMap){
+        //validation
+        if(areaMap.validate()){
+            throw new RuntimeException("area map validation failed");
+        }
+
         HeatMapSolutions oldHeatMap = new HeatMapSolutions(new double[areaMap.getArea().length][areaMap.getArea()[0].length]);
         HeatMapSolutions newHeatMap = new HeatMapSolutions(new double[areaMap.getArea().length][areaMap.getArea()[0].length]);
         oldHeatMap.overwrite(areaMap.getHeatMap());
@@ -47,15 +54,28 @@ public class HeatMapAnalyser {
                 //calculating heat decline
                 for(int i = 0; i < newHeatMap.getWidth(); i++){
                     for(int j = 0; j < newHeatMap.getHeight(); j++){
-                        newHeatMap.heatArray[i][j] *= 1 - areaMap.getArea()[i][j].heatDecline * stage.precisionFactor;
+                        newHeatMap.heatArray[i][j] -= oldHeatMap.heatArray[i][j]
+                                * areaMap.getArea()[i][j].heatDecline / stage.precisionFactor;
                     }
                 }
 
+                //accuracy check
+                if(stage.accuracy != 0){
+                    double sum = 0;
+                    for(int i = 0; i < newHeatMap.getWidth(); i++){
+                        for(int j = 0; j < newHeatMap.getHeight(); j++){
+                            sum += Math.abs(oldHeatMap.heatArray[i][j] - newHeatMap.heatArray[i][j]);
+                        }
+                    }
+                    if(sum < stage.accuracy){
+                        stepNum = stage.stepCount;
+                    }
+                }
+
+                //overwrite old heat map with new heat map
                 oldHeatMap.overwrite(newHeatMap);
-                //TODO: check accuracy
             }
         }
-
         return oldHeatMap;
     }
 

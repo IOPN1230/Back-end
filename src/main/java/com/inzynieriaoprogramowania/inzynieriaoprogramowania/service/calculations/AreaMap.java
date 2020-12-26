@@ -8,7 +8,6 @@ public class AreaMap {
     public AreaMap(Place[][] area, HeatMapSolutions heatMap) {
         this.area = area;
         this.heatMap = heatMap;
-        // TODO: throw custom exception if area and heat map has different size
     }
 
     public Place[][] getArea() {
@@ -20,12 +19,23 @@ public class AreaMap {
     }
 
     public void setArea(Place[][] area) {
-        // TODO: throw custom exception if area and heat map has different size
         this.area = area;
     }
 
     public void setHeatMap(HeatMapSolutions heatMap) {
-        // TODO: throw custom exception if area and heat map has different size
         this.heatMap = heatMap;
+    }
+
+    public int getWidth(){return area.length;}
+    public int getHeight(){return area[0].length;}
+
+    public boolean validate(){
+        int height = this.getHeight();
+        for (Place[] column : area) {
+            if (column.length != height) {
+                return true;
+            }
+        }
+        return heatMap.validate();
     }
 }
