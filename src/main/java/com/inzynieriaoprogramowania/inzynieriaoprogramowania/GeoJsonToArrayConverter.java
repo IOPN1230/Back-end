@@ -56,25 +56,57 @@ public class GeoJsonToArrayConverter {
     public ArrayList<Point> getAllPoints(JsonNode map)
     {
     	ArrayList<Point> points = new ArrayList<>();
+    
         JsonNode features = map.path("features");
         Iterator<JsonNode> featuresIterator = features.iterator();
         while(featuresIterator.hasNext()){
         	int i = 1;
             JsonNode figure = featuresIterator.next();
-            JsonNode coordinates = figure.path("geometry").path("coordinates");
-            JsonNode x = coordinates.get(0);
-            JsonNode y = coordinates.get(1);
-            /*Iterator<JsonNode> coordinatesIterator = coordinates.iterator();
-            while(coordinatesIterator.hasNext()){
-            	System.out.print(i);
-            	i++;
-            	pointX = coordinatesIterator.next();
-            	pointY = coordinatesIterator.next();
-            	//TODO: Make the next line construct Point(x,y) by parsing the X and Y value from JSON point coordinates properly
-            }*/
-            points.add(new Point(x.asDouble(),y.asDouble()));
+            JsonNode type = figure.path("geometry").path("type");
+            if(type.equals("Point"))
+            {
+            	JsonNode coordinates = figure.path("geometry").path("coordinates");
+            	JsonNode x = coordinates.get(0);
+            	JsonNode y = coordinates.get(1);
+            	points.add(new Point(x.asDouble(),y.asDouble()));
+            }
+            if(type.equals("Polygon"))
+            {
+            	JsonNode coordinates = figure.path("geometry").path("coordinates");
+            	
+            }
+            
         }
         return points;
+    }
+    
+    public ArrayList<Polygon> getAllPolygons(JsonNode map)
+    {
+    	ArrayList<Polygon> polygons = new ArrayList<>();
+    	ArrayList<Point> vertexesArray = new ArrayList<>();
+    
+        JsonNode features = map.path("features");
+        Iterator<JsonNode> featuresIterator = features.iterator();
+        while(featuresIterator.hasNext()){
+        	int i = 1;
+            JsonNode figure = featuresIterator.next();
+            JsonNode type = figure.path("geometry").path("type");
+            JsonNode geometry = figure.path("geometry");
+            if(type.equals("Polygon"))
+            {
+            	JsonNode coordinates = figure.path("coordinates");
+            	Iterator<JsonNode> coordinatesIterator = coordinates.iterator();
+                while(coordinatesIterator.hasNext())
+                {
+                	JsonNode particularCoordinates = coordinatesIterator.next();
+                	JsonNode x = particularCoordinates.get(0);
+                	JsonNode y = particularCoordinates.get(1);
+                	vertexesArray.add(new Point(x.asDouble(),y.asDouble()));
+                }
+            }    
+            polygons.add(new Polygon(vertexesArray));
+        }
+        return polygons;
     }
     
     public ArrayList<ArrayList<Place>> createAreaMap() {
@@ -94,14 +126,13 @@ public class GeoJsonToArrayConverter {
     	
     }
     
-    public ArrayList<ArrayList<Place>> modifyPlaces(ArrayList<ArrayList<Place>> placesArray,ArrayList<Point> pointsArray) {
+    public ArrayList<ArrayList<Place>> modifyPlaces(ArrayList<ArrayList<Place>> placesArray,ArrayList<Point> pointsArray,ArrayList<Polygon> polygonsArray) {
     	for(Point point : pointsArray)
     	{
     		for(ArrayList<Place> places : placesArray)
     		{
     			for(Place place: places)
     			{
-    				//TODO: create fields X and Y in Place.class
     				if(point.getX() > place.getX() && point.getX() < place.getX() + 0.000180)
         			{
         				if(point.getY() < place.getY() && point.getY() > place.getY() - 0.000290 )
@@ -114,13 +145,20 @@ public class GeoJsonToArrayConverter {
     			}
     		}
     	}
-    	for(int i=0;i<placesArray.size();i++)
+    	
+    	for(Polygon polygon: polygonsArray)
     	{
-    		for(int j=0;j<placesArray.get(i).size();j++)
+    		//Lista przechowujaca rownania sprawdzajace zawieranie sie punktu wewnatrz wielokata
+    		ArrayList<Equation> checkingEquations = new ArrayList<>();
+ 
+    		for(int i=0;i<polygon.getEquations().size();i++)
     		{
-    			if(placesArray.get(i).get(j).emission == 1.0 ) System.out.println(i +", "+j);
+    			//Tutaj bedzie caly algorytm wyznaczania obecnosci wielokata w danym elemencie MapArraya
+    			//Zwroci on po prostu uaktualniona wersje placesArray, gotowa do wyslania do obliczen
     		}
+    		
     	}
     	return placesArray;
     }
+    
 }
