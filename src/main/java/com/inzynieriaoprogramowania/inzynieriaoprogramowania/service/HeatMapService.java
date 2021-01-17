@@ -16,11 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.inzynieriaoprogramowania.inzynieriaoprogramowania.service.calculations.Place;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -39,39 +38,32 @@ public class HeatMapService {
         this.geoJsonToArrayConverter = new GeoJsonToArrayConverter();
     }
 
-    public ResponseEntity<String> getHeatMap(int id, HttpServletRequest request) {
+    public byte[] getHeatMap(int id, HttpServletRequest request) {
         try {
-            convertHeatMapSolutions();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            return ResponseEntity.ok(getBody(request));
+            return convertHeatMapSolutions(getBody(request));
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public AreaMap convertHeatMapSolutions() throws JsonParseException, IOException {
+    public byte[] convertHeatMapSolutions(String requestBody) throws JsonParseException, IOException {
 
-
-        Resource resource = resourceLoader.getResource("classpath:map.json");
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); //If exists unknown element in JSON file, we can skip it without exception
-        JsonNode map = objectMapper.readTree(resource.getFile());
+        JsonNode map = objectMapper.readTree(requestBody);
         ArrayList<Point> pointsArray = geoJsonToArrayConverter.getAllPoints(map);
         
         //Dzielimy sobie mapke na kwadraty (obszary)
 		placesArray =  geoJsonToArrayConverter.createAreaMap();
 		
 		//Stworzenie tablicy ze zmodyfikowanymi juz wartosciami emission itp
-		//modifiedPlacesArray = geoJsonToArrayConverter.modifyPlaces(placesArray, pointsArray);
+		modifiedPlacesArray = geoJsonToArrayConverter.modifyPlaces(placesArray, pointsArray);
 		
 		//I rozumiem, ze mamy zwrocic AreaMap (czyli moze po prostu ArrayList<ArrayList<>> ? )
-		//Place area[][] = this.convertArrayListToArray(modifiedPlacesArray);
-		//AreaMap areaMap = new AreaMap(area, heatMapSolutions);
+		Place area[][] = this.convertArrayListToArray(modifiedPlacesArray);
+        AreaMap areaMap = new AreaMap(area, heatMapSolutions);
 
 		//Test of converter start
         double[][] testArray = new double[500][500];
@@ -85,10 +77,15 @@ public class HeatMapService {
         }
         HeatMapSolutions heatMapSolutionsTest = new HeatMapSolutions(testArray);
         SolutionsToBitmapConverter solutionsToBitmapConverter = new SolutionsToBitmapConverter(heatMapSolutionsTest);
-        //solutionsToBitmapConverter.createBitmap();
+        BufferedImage bitmap = solutionsToBitmapConverter.createBitmap();
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(bitmap, "bmp", os);
+
+        return os.toByteArray();
         //Test of converter end
 
-        return new AreaMap(new Place[0][0], new HeatMapSolutions(new double[0][0]));
+        //return new AreaMap(new Place[0][0], new HeatMapSolutions(new double[0][0]));
     }
     //Konwersja z arrayList na tablice dwuwymiarowa, wykorzystywane to bedzie wg preferencji obliczen
     public Place[][] convertArrayListToArray(ArrayList<ArrayList<Place>> placesTwoDimensionalArray)

@@ -126,7 +126,7 @@ public class GeoJsonToArrayConverter {
     	
     }
     
-    public ArrayList<ArrayList<Place>> modifyPlaces(ArrayList<ArrayList<Place>> placesArray,ArrayList<Point> pointsArray,ArrayList<Polygon> polygonsArray) {
+    public ArrayList<ArrayList<Place>> modifyPlaces(ArrayList<ArrayList<Place>> placesArray,ArrayList<Point> pointsArray/*,ArrayList<Polygon> polygonsArray*/) {
     	for(Point point : pointsArray)
     	{
     		for(ArrayList<Place> places : placesArray)
@@ -146,7 +146,7 @@ public class GeoJsonToArrayConverter {
     		}
     	}
     	
-    	for(Polygon polygon: polygonsArray)
+    	/*for(Polygon polygon: polygonsArray)
     	{
     		//Lista przechowujaca rownania sprawdzajace zawieranie sie punktu wewnatrz wielokata
     		ArrayList<Equation> checkingEquations = new ArrayList<>();
@@ -157,7 +157,7 @@ public class GeoJsonToArrayConverter {
     			//Zwroci on po prostu uaktualniona wersje placesArray, gotowa do wyslania do obliczen
     		//}
     		
-    	}
+    	}*/
     	return placesArray;
     }
     
