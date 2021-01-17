@@ -12,10 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.inzynieriaoprogramowania.inzynieriaoprogramowania.service.calculations.Place;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -34,13 +39,18 @@ public class HeatMapService {
         this.geoJsonToArrayConverter = new GeoJsonToArrayConverter();
     }
 
-    public String getHeatMap(int id) {
+    public ResponseEntity<String> getHeatMap(int id, HttpServletRequest request) {
         try {
             convertHeatMapSolutions();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "...przeliczam dla obiektu: " + id + "...zwracam bitmapę";
+        try {
+            return ResponseEntity.ok(getBody(request));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public AreaMap convertHeatMapSolutions() throws JsonParseException, IOException {
@@ -57,11 +67,11 @@ public class HeatMapService {
 		placesArray =  geoJsonToArrayConverter.createAreaMap();
 		
 		//Stworzenie tablicy ze zmodyfikowanymi juz wartosciami emission itp
-		modifiedPlacesArray = geoJsonToArrayConverter.modifyPlaces(placesArray, pointsArray);
+		//modifiedPlacesArray = geoJsonToArrayConverter.modifyPlaces(placesArray, pointsArray);
 		
 		//I rozumiem, ze mamy zwrocic AreaMap (czyli moze po prostu ArrayList<ArrayList<>> ? )
-		Place area[][] = this.convertArrayListToArray(modifiedPlacesArray);
-		AreaMap areaMap = new AreaMap(area, heatMapSolutions);
+		//Place area[][] = this.convertArrayListToArray(modifiedPlacesArray);
+		//AreaMap areaMap = new AreaMap(area, heatMapSolutions);
 
 		//Test of converter start
         double[][] testArray = new double[500][500];
@@ -75,10 +85,10 @@ public class HeatMapService {
         }
         HeatMapSolutions heatMapSolutionsTest = new HeatMapSolutions(testArray);
         SolutionsToBitmapConverter solutionsToBitmapConverter = new SolutionsToBitmapConverter(heatMapSolutionsTest);
-        solutionsToBitmapConverter.createBitmap();
+        //solutionsToBitmapConverter.createBitmap();
         //Test of converter end
 
-        return areaMap;
+        return new AreaMap(new Place[0][0], new HeatMapSolutions(new double[0][0]));
     }
     //Konwersja z arrayList na tablice dwuwymiarowa, wykorzystywane to bedzie wg preferencji obliczen
     public Place[][] convertArrayListToArray(ArrayList<ArrayList<Place>> placesTwoDimensionalArray)
@@ -93,5 +103,39 @@ public class HeatMapService {
     		}
     	}
     	return areaMap;
+    }
+
+    public static String getBody(HttpServletRequest request) throws IOException {
+
+        String body = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader bufferedReader = null;
+
+        try {
+            InputStream inputStream = request.getInputStream();
+            if (inputStream != null) {
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                char[] charBuffer = new char[128];
+                int bytesRead = -1;
+                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+                    stringBuilder.append(charBuffer, 0, bytesRead);
+                }
+            } else {
+                stringBuilder.append("");
+            }
+        } catch (IOException ex) {
+            throw ex;
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException ex) {
+                    throw ex;
+                }
+            }
+        }
+
+        body = stringBuilder.toString();
+        return body;
     }
 }

@@ -151,11 +151,11 @@ public class GeoJsonToArrayConverter {
     		//Lista przechowujaca rownania sprawdzajace zawieranie sie punktu wewnatrz wielokata
     		ArrayList<Equation> checkingEquations = new ArrayList<>();
  
-    		for(int i=0;i<polygon.getEquations().size();i++)
-    		{
+    		//for(int i=0;i<polygon.getEquations().size();i++)
+    		//{
     			//Tutaj bedzie caly algorytm wyznaczania obecnosci wielokata w danym elemencie MapArraya
     			//Zwroci on po prostu uaktualniona wersje placesArray, gotowa do wyslania do obliczen
-    		}
+    		//}
     		
     	}
     	return placesArray;
