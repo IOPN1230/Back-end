@@ -63,7 +63,8 @@ public class GeoJsonToArrayConverter {
         	int i = 1;
             JsonNode figure = featuresIterator.next();
             JsonNode type = figure.path("geometry").path("type");
-            if(type.equals("Point"))
+       
+            if(type.asText().equals("Point"))
             {
             	JsonNode coordinates = figure.path("geometry").path("coordinates");
             	JsonNode x = coordinates.get(0);
@@ -88,23 +89,27 @@ public class GeoJsonToArrayConverter {
         JsonNode features = map.path("features");
         Iterator<JsonNode> featuresIterator = features.iterator();
         while(featuresIterator.hasNext()){
-        	int i = 1;
+     
             JsonNode figure = featuresIterator.next();
             JsonNode type = figure.path("geometry").path("type");
             JsonNode geometry = figure.path("geometry");
-            if(type.equals("Polygon"))
+            if(type.asText().equals("Polygon"))
             {
-            	JsonNode coordinates = figure.path("coordinates");
+            	
+            	JsonNode coordinates = geometry.path("coordinates");
+           
             	Iterator<JsonNode> coordinatesIterator = coordinates.iterator();
-                while(coordinatesIterator.hasNext())
-                {
-                	JsonNode particularCoordinates = coordinatesIterator.next();
-                	JsonNode x = particularCoordinates.get(0);
-                	JsonNode y = particularCoordinates.get(1);
-                	vertexesArray.add(new Point(x.asDouble(),y.asDouble()));
-                }
+            	for(int i= 1;i<coordinates.size();i++)
+            	{
+            		double x = coordinates.get(i).get(0).asDouble();
+            		double y = coordinates.get(i).get(1).asDouble();
+            		vertexesArray.add(new Point(x,y));
+            	}
+               
+                polygons.add(new Polygon(vertexesArray));
             }    
-            polygons.add(new Polygon(vertexesArray));
+            
+            
         }
         return polygons;
     }
@@ -148,17 +153,71 @@ public class GeoJsonToArrayConverter {
     	
     	for(Polygon polygon: polygonsArray)
     	{
-    		//Lista przechowujaca rownania sprawdzajace zawieranie sie punktu wewnatrz wielokata
-    		ArrayList<Equation> checkingEquations = new ArrayList<>();
- 
-    		for(int i=0;i<polygon.getEquations().size();i++)
+    		System.out.println(polygon.getExtremes());
+    		//Znajdz skrajne places
+    		int startX = 0, startY= 0, endX= 0, endY= 0;
+    		for(int i =0;i<placesArray.size();i++)
     		{
-    			//Tutaj bedzie caly algorytm wyznaczania obecnosci wielokata w danym elemencie MapArraya
-    			//Zwroci on po prostu uaktualniona wersje placesArray, gotowa do wyslania do obliczen
+    			for(int j = 0; j < placesArray.get(i).size(); j++)
+    			{
+    				Place p = placesArray.get(i).get(j);
+    				
+    				if(p.getY() <= polygon.getExtremes().get(0) && polygon.getExtremes().get(0) - 0.000290 <= p.getY() )
+					{
+						startY = i;
+					}
+    				if(p.getX() >= polygon.getExtremes().get(1) && polygon.getExtremes().get(1) + 0.000180 >= p.getX() )
+    				{
+    					startX = j;
+    				}
+    				if(p.getY() >= polygon.getExtremes().get(2) && polygon.getExtremes().get(2) >= p.getY() - 0.000290)
+					{
+						endY = i;
+					}
+    				if(p.getX() <= polygon.getExtremes().get(3) && polygon.getExtremes().get(3) <= p.getX() + 0.000180)
+    				{
+    					endX = j;
+    				}
+    				
+    			}
     		}
-    		
+    		ArrayList<Equation> checkingEquations = new ArrayList<>();
+    		//Na sztywno wpisana dziedzina X naszych rownan sprawdzajacych, ustawiona jest ona od 18 do 21 ( nasze dlugosci geograficzne)
+    		checkingEquations.add(new Equation(-1,0,18,21));
+    		checkingEquations.add(new Equation(0,0,18,21));
+    		checkingEquations.add(new Equation(1,0,18,21));
+    		//Dla kazdego punktu w obszarze sprawdzaj czy sie znajduje
+    		int counter = 0;
+    		for(int yIterator = startY; yIterator < endY; yIterator ++)
+    		{
+    			for(int xIterator = startX; xIterator<endX;xIterator++)
+    			{
+    				Place p = placesArray.get(yIterator).get(xIterator);
+    				boolean isPointInside = true;
+    	    		checkingEquations.get(0).setB(p);
+    	    		checkingEquations.get(1).setB(p);
+    	    		checkingEquations.get(2).setB(p);
+    	    		for(Equation ce : checkingEquations)
+    	    		{
+    	    			boolean hasCrossedAny = false;
+    	    			for(Equation e : polygon.getEquations())
+    	    			{
+    	    				if(ce.check(e)) hasCrossedAny = true;
+    	    				
+    	    			}
+    	    			if(hasCrossedAny = false) isPointInside = false;
+    	    		}
+    	    		if(isPointInside) 
+    	    		{
+    	    			p.emission =+ 1.0;
+    	    		}
+    	    		
+    			}
+    		}    		
     	}
     	return placesArray;
     }
+    
+    
     
 }

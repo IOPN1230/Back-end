@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.inzynieriaoprogramowania.inzynieriaoprogramowania.GeoJsonToArrayConverter;
 import com.inzynieriaoprogramowania.inzynieriaoprogramowania.Point;
+import com.inzynieriaoprogramowania.inzynieriaoprogramowania.Polygon;
 import com.inzynieriaoprogramowania.inzynieriaoprogramowania.Shape;
 import com.inzynieriaoprogramowania.inzynieriaoprogramowania.service.calculations.AreaMap;
 import com.inzynieriaoprogramowania.inzynieriaoprogramowania.service.calculations.HeatMapSolutions;
@@ -52,12 +53,13 @@ public class HeatMapService {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); //If exists unknown element in JSON file, we can skip it without exception
         JsonNode map = objectMapper.readTree(resource.getFile());
         ArrayList<Point> pointsArray = geoJsonToArrayConverter.getAllPoints(map);
+        ArrayList<Polygon> polygonsArray = geoJsonToArrayConverter.getAllPolygons(map);
         
         //Dzielimy sobie mapke na kwadraty (obszary)
 		placesArray =  geoJsonToArrayConverter.createAreaMap();
 		
 		//Stworzenie tablicy ze zmodyfikowanymi juz wartosciami emission itp
-		modifiedPlacesArray = geoJsonToArrayConverter.modifyPlaces(placesArray, pointsArray);
+		modifiedPlacesArray = geoJsonToArrayConverter.modifyPlaces(placesArray, pointsArray, polygonsArray);
 		
 		//I rozumiem, ze mamy zwrocic AreaMap (czyli moze po prostu ArrayList<ArrayList<>> ? )
 		Place area[][] = this.convertArrayListToArray(modifiedPlacesArray);
