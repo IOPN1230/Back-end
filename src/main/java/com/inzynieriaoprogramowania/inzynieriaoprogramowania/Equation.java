@@ -26,11 +26,28 @@ public class Equation {
 	public double getB() {
 		return b;
 	}
-	public boolean check(Equation ce) {
+	public double getXStart() {
+		return xStart;
+	}
+	public double getXEnd() {
+		return xEnd;
+	}
+	public boolean check(Equation e) {
 		boolean isCrossed = false;
-		double x = (ce.getB() - this.b ) / ( this.a - ce.getA() );
-		if((x > xStart && x < xEnd) ||( x > xEnd && x < xStart) ) isCrossed = true;
+		double x = (e.getB() - this.b ) / ( this.a - e.getA() );
+		if((x > e.getXStart() && x < e.getXEnd()) ||( x > e.getXEnd() && x < e.getXStart() ) ) 
+		{
+			if((x > this.xStart && x < this.xEnd ||( x > this.xEnd && x < this.xStart )))
+			{
+				isCrossed = true;
+			}	
+		}
 		return isCrossed;
+	}
+	public void setDomain(double xStart, double xEnd) {
+		// TODO Auto-generated method stub
+		this.xStart = xStart;
+		this.xEnd = xEnd;
 	}
 
 }

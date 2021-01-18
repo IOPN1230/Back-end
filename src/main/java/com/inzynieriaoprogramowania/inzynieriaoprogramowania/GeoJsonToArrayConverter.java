@@ -179,7 +179,10 @@ public class GeoJsonToArrayConverter {
     		ArrayList<Equation> checkingEquations = new ArrayList<>();
     		//Na sztywno wpisana dziedzina X naszych rownan sprawdzajacych, ustawiona jest ona od 18 do 21 ( nasze dlugosci geograficzne)
     		checkingEquations.add(new Equation(-1,0,18,21));
+    		checkingEquations.add(new Equation(-1,0,18,21));
     		checkingEquations.add(new Equation(0,0,18,21));
+    		checkingEquations.add(new Equation(0,0,18,21));
+    		checkingEquations.add(new Equation(1,0,18,21));
     		checkingEquations.add(new Equation(1,0,18,21));
     		//Dla kazdego punktu w obszarze sprawdzaj czy sie znajduje
     		int counter = 0;
@@ -189,9 +192,21 @@ public class GeoJsonToArrayConverter {
     			{
     				Place p = placesArray.get(yIterator).get(xIterator);
     				boolean isPointInside = true;
-    	    		checkingEquations.get(0).setB(p);
-    	    		checkingEquations.get(1).setB(p);
-    	    		checkingEquations.get(2).setB(p);
+    				
+    				checkingEquations.get(0).setB(p);
+    				checkingEquations.get(0).setDomain(18,p.getX());
+    				checkingEquations.get(0).setB(p);
+    				checkingEquations.get(0).setDomain(p.getX(),21);
+    				checkingEquations.get(1).setB(p);
+    				checkingEquations.get(1).setDomain(18,p.getX());
+    				checkingEquations.get(1).setB(p);
+    				checkingEquations.get(1).setDomain(p.getX(),21);
+    				checkingEquations.get(2).setB(p);
+    				checkingEquations.get(2).setDomain(18,p.getX());
+    				checkingEquations.get(2).setB(p);
+    				checkingEquations.get(2).setDomain(p.getX(),21);
+    				
+    	    		
     	    		for(Equation ce : checkingEquations)
     	    		{
     	    			boolean hasCrossedAny = false;
