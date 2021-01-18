@@ -18,8 +18,8 @@ public class HeatMapController {
     @Autowired
     private HeatMapService heatMapService;
 
-    @GetMapping("/{id}")
-    public @ResponseBody byte[] getHeatMap(@PathVariable int id, HttpServletRequest httpServletRequest) {
-        return heatMapService.getHeatMap(id, httpServletRequest);
+    @GetMapping("/")
+    public @ResponseBody byte[] getHeatMap(HttpServletRequest httpServletRequest) {
+        return heatMapService.getHeatMap(httpServletRequest);
     }
 }

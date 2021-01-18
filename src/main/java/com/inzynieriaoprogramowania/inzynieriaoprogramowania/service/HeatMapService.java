@@ -38,7 +38,7 @@ public class HeatMapService {
         this.geoJsonToArrayConverter = new GeoJsonToArrayConverter();
     }
 
-    public byte[] getHeatMap(int id, HttpServletRequest request) {
+    public byte[] getHeatMap(HttpServletRequest request) {
         try {
             return convertHeatMapSolutions(getBody(request));
         } catch (IOException e) {
@@ -64,33 +64,8 @@ public class HeatMapService {
 		//I rozumiem, ze mamy zwrocic AreaMap (czyli moze po prostu ArrayList<ArrayList<>> ? )
 		Place area[][] = this.convertArrayListToArray(modifiedPlacesArray);
 
-		int testCounter = 0;
-		for(int i = 0; i < modifiedPlacesArray.size(); i++){
-		    for(int j = 0; j < modifiedPlacesArray.get(0).size(); j++){
-                if(0 != modifiedPlacesArray.get(i).get(j).emission){
-                    testCounter++;
-                }
-            }
-        }
-		//System.out.println("liczba emitujących placów = "+testCounter);
 		heatMapSolutions = new HeatMapSolutions(new double[area.length][area[0].length]);
-		for(int i = 0; i < heatMapSolutions.heatArray.length; i++){
-		    for(int j = 0; j < heatMapSolutions.heatArray[0].length; j++){
-		        heatMapSolutions.heatArray[i][j]=0.167;
-            }
-        }
-
 		AreaMap areaMap = new AreaMap(area, heatMapSolutions);
-		//Test of converter start
-        double[][] testArray = new double[500][500];
-        Random rand = new Random();
-        for(int i = 0; i < 500; i++){
-            for(int j = 0; j < 500; j++) {
-                //TODO: Replace rand.nextDouble() with values from kernel
-                //TODO: Move below conversions to SolutionsToBitmapConverter
-                testArray[i][j]= rand.nextDouble();
-            }
-        }
 
         //Final testing
         Stage[] stages = {new Stage(1000,200,1)};
