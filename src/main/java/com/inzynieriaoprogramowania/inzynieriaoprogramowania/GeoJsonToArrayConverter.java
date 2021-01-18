@@ -94,8 +94,8 @@ public class GeoJsonToArrayConverter {
             	Iterator<JsonNode> coordinatesIterator = coordinates.iterator();
             	for(int i= 1;i<coordinates.size();i++)
             	{
-            		double x = coordinates.get(i).get(0).asDouble();
-            		double y = coordinates.get(i).get(1).asDouble();
+            		double x = coordinates.get(0).get(i).get(0).asDouble();
+            		double y = coordinates.get(0).get(i).get(1).asDouble();
             		vertexesArray.add(new Point(x,y));
             	}
 
