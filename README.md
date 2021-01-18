@@ -31,6 +31,7 @@ Warstwa back-end aplikacji realizującej projekt bauhinia.
 - [Plik word](https://tulodz-my.sharepoint.com/:w:/g/personal/203397_edu_p_lodz_pl/EddvK1vCReFImH6SebB1HRUBgvNcfNe4yLuv95gw9w6BEA?e=0SMaNB)
 
 ## Dokumentacja użytkownika
+- [Plik word](https://tulodz-my.sharepoint.com/:w:/g/personal/203397_edu_p_lodz_pl/ETamJpg6OW1IiHy3FIUmNb4BvmSWV22fCRFp9yQLxkltNA?e=CHQD7u)
 
 ## Przydatne linki
 - [Prezentacja modułu logowania](https://tulodz-my.sharepoint.com/:b:/g/personal/224384_edu_p_lodz_pl/EUDMAxZqo1RDrxcH5jxTQaABIq0NjnNEZ08n_gkGOqP0XQ?e=Gl0WVQ)
