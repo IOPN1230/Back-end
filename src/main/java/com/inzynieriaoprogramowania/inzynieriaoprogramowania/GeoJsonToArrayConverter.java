@@ -13,22 +13,15 @@ public class GeoJsonToArrayConverter {
     //TODO: Add custom exception in case of wrong json file
     public ArrayList<Shape> getAllFigures(JsonNode map) {
         ArrayList<Shape> polygons = new ArrayList<>();
-        //System.out.println("siusiak1");
         JsonNode features = map.path("features");
-        //System.out.println("siusiak2");
         Iterator<JsonNode> featuresIterator = features.iterator();
-        //System.out.println("siusiak3");
         while(featuresIterator.hasNext()){
-            //System.out.println("siusiak4");
             JsonNode figure = featuresIterator.next();
-            //System.out.println("siusiak5");
             JsonNode coordinates = figure.path("geometry").path("coordinates");
-            //System.out.println("siusiak6");
             Iterator<JsonNode> coordinatesIterator = coordinates.iterator();
             Shape shape = new Shape();
             boolean isX = true;
             while(coordinatesIterator.hasNext()){
-                //System.out.println("siusiak7");
                 JsonNode point = coordinatesIterator.next();
                 if(point.getNodeType().toString().equals("NUMBER")){
                     if (isX){
@@ -123,10 +116,10 @@ public class GeoJsonToArrayConverter {
     		ArrayList<Place> current = places.get(places.size() - 1);
     		for(double shiftX = 19.334416; shiftX < 19.592922; shiftX += 0.000290 )
     		{
-    			current.add(new Place(0.0,0.0,0.0,shiftX,shiftY));
+    			current.add(new Place(0.0,0.5,0.1,shiftX,shiftY));
     		}
     	}
-    	System.out.print("Rozmiar kolumny: " + places.size() + ", Rozmiar wiersza: " + places.get(0).size());
+    	//System.out.print("Rozmiar kolumny: " + places.size() + ", Rozmiar wiersza: " + places.get(0).size());
 		return places;
     	
     }
@@ -144,7 +137,9 @@ public class GeoJsonToArrayConverter {
         				{
         					//Eksperymntalne ustawienie wartosci emisji na 1 w obszarze, w ktorym jest jakis punkt
         					place.emission = 1.0;
-        					System.out.println("Punkt na "+ place.getX() + ", " + place.getY());
+        					place.heatConduction = 0.5;
+        					place.heatDecline = 0.1;
+        					//System.out.println("Punkt na "+ place.getX() + ", " + place.getY());
         				}
         			}
     			}
@@ -153,7 +148,7 @@ public class GeoJsonToArrayConverter {
     	
     	for(Polygon polygon: polygonsArray)
     	{
-    		System.out.println(polygon.getExtremes());
+    		//System.out.println(polygon.getExtremes());
     		//Znajdz skrajne places
     		int startX = 0, startY= 0, endX= 0, endY= 0;
     		for(int i =0;i<placesArray.size();i++)
@@ -205,11 +200,13 @@ public class GeoJsonToArrayConverter {
     	    				if(ce.check(e)) hasCrossedAny = true;
     	    				
     	    			}
-    	    			if(hasCrossedAny = false) isPointInside = false;
+    	    			if(!hasCrossedAny) isPointInside = false;
     	    		}
     	    		if(isPointInside) 
     	    		{
     	    			p.emission =+ 1.0;
+						p.heatConduction = 0.5;
+						p.heatDecline = 0.1;
     	    		}
     	    		
     			}

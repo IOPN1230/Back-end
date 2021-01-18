@@ -3,28 +3,22 @@ package com.inzynieriaoprogramowania.inzynieriaoprogramowania.service;
 import com.inzynieriaoprogramowania.inzynieriaoprogramowania.service.calculations.HeatMapSolutions;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 public class SolutionsToBitmapConverter {
 
     private double[][] values;
+    private boolean[][] lightAboveZero;
     private HeatMapSolutions heatMapSolutions;
     private int height;
     private int width;
 
     public SolutionsToBitmapConverter(HeatMapSolutions heatMapSolutions) {
         this.heatMapSolutions = heatMapSolutions;
+        this.lightAboveZero = new boolean[this.heatMapSolutions.heatArray.length][this.heatMapSolutions.heatArray[0].length];
         values = heatMapSolutions.heatArray;
         height = values.length;
         width = values[0].length;
@@ -38,10 +32,26 @@ public class SolutionsToBitmapConverter {
         return 0xFF000000 | red | green | blue; //0xFF000000 for 100% Alpha. Bitwise OR everything together.
     }
 
-    private void solutionsToHue(){
+    private void normalize(){
+        double epsilon = 0.0042;
+        double max = this.heatMapSolutions.heatArray[0][0];
         for(int i = 0; i < this.heatMapSolutions.heatArray.length; i++){
             for(int j = 0; j < this.heatMapSolutions.heatArray[0].length; j++){
-                this.heatMapSolutions.heatArray[i][j] *= 1.0/6; //to convert from 0-1 values to 0-0.167 values, represeinting our red/orange/yellow hue values
+                if(max<this.heatMapSolutions.heatArray[i][j]){
+                    max = this.heatMapSolutions.heatArray[i][j];
+                }
+            }
+        }
+
+        for(int i = 0; i < this.heatMapSolutions.heatArray.length; i++){
+            for(int j = 0; j < this.heatMapSolutions.heatArray[0].length; j++){
+                this.heatMapSolutions.heatArray[i][j] *= 1.0/(6*max); //to convert values to 0-0.167 values, representing our red/orange/yellow hue values
+                if(epsilon > this.heatMapSolutions.heatArray[i][j]) this.lightAboveZero[i][j] = false;
+                else {
+                    this.heatMapSolutions.heatArray[i][j] = 0.167-this.heatMapSolutions.heatArray[i][j]; //put in reverse order, to make negative colors (red for hot and yellow for cold)
+                    this.lightAboveZero[i][j] = true;
+                }
+
             }
         }
     }
@@ -95,9 +105,14 @@ public class SolutionsToBitmapConverter {
         ArrayList<Integer> array = new ArrayList<>();
         for(int i = 0; i < values.length; i++){
             for(int j=0; j < values[0].length; j++){
-                /*HSL - Hue = dependent on HeatMapSolutions, Saturation = 100, Light = 60
-                * Values of hue has to be between 0 and 60 ()*/
-                int[] RGBcolor = hslColor(values[i][j], 1, 0.6);
+                /*HSL - Hue = dependent on HeatMapSolutions, Saturation = 100, Light = 60*/
+                int[] RGBcolor;
+                if(this.lightAboveZero[i][j]){
+                    RGBcolor = hslColor(values[i][j], 1, 0.6);
+                }
+                else{
+                    RGBcolor = hslColor(values[i][j], 1, 0);
+                }
                 int intColor = getIntFromColor(RGBcolor[0], RGBcolor[1], RGBcolor[2]);
                 array.add(intColor);
             }
@@ -115,12 +130,12 @@ public class SolutionsToBitmapConverter {
     }
 
     public BufferedImage createBitmap(){
-        solutionsToHue();
+        normalize();
         BufferedImage bufferedImage = new BufferedImage(this.width,this.height,BufferedImage.TYPE_INT_RGB);
         int[] res = arraylistToArray();
         bufferedImage.setRGB(0, 0, width, height, res, 0, width);
         try {
-            ImageIO.write(bufferedImage, "jpg", new File("/home/piotr/test.jpg"));
+            ImageIO.write(bufferedImage, "jpg", new File("D:\\Gry\\test.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }

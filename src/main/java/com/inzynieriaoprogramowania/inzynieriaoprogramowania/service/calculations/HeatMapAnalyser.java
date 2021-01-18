@@ -21,11 +21,11 @@ public class HeatMapAnalyser {
         newHeatMap.overwrite(oldHeatMap);
         for (Stage stage:configuration.stages) {
             for (int stepNum = 0; stepNum < stage.stepCount; stepNum++) {
-
                 //adding emission to newHeatMap
                 for(int i = 0; i < newHeatMap.getWidth(); i++){
                     for(int j = 0; j < newHeatMap.getHeight(); j++){
                         newHeatMap.heatArray[i][j] += areaMap.getArea()[i][j].emission / stage.precisionFactor;
+                        //System.out.println("j: "+j);
                     }
                 }
 
