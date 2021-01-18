@@ -226,8 +226,8 @@ public class GeoJsonToArrayConverter {
     	    		if(isPointInside)
     	    		{
     	    			p.emission =+ 1;
-						p.heatConduction = 0.0;
-						p.heatDecline = 0.0;
+						p.heatConduction = 0.5;
+						p.heatDecline = 0.1;
     	    		}
 
     			}
