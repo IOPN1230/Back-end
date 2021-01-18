@@ -56,7 +56,7 @@ public class GeoJsonToArrayConverter {
         	int i = 1;
             JsonNode figure = featuresIterator.next();
             JsonNode type = figure.path("geometry").path("type");
-       
+
             if(type.asText().equals("Point"))
             {
             	JsonNode coordinates = figure.path("geometry").path("coordinates");
@@ -82,15 +82,15 @@ public class GeoJsonToArrayConverter {
         JsonNode features = map.path("features");
         Iterator<JsonNode> featuresIterator = features.iterator();
         while(featuresIterator.hasNext()){
-     
+
             JsonNode figure = featuresIterator.next();
             JsonNode type = figure.path("geometry").path("type");
             JsonNode geometry = figure.path("geometry");
             if(type.asText().equals("Polygon"))
             {
-            	
+
             	JsonNode coordinates = geometry.path("coordinates");
-           
+
             	Iterator<JsonNode> coordinatesIterator = coordinates.iterator();
             	for(int i= 1;i<coordinates.size();i++)
             	{
@@ -98,11 +98,11 @@ public class GeoJsonToArrayConverter {
             		double y = coordinates.get(i).get(1).asDouble();
             		vertexesArray.add(new Point(x,y));
             	}
-               
+
                 polygons.add(new Polygon(vertexesArray));
-            }    
-            
-            
+            }
+
+
         }
         return polygons;
     }
@@ -156,7 +156,7 @@ public class GeoJsonToArrayConverter {
     			for(int j = 0; j < placesArray.get(i).size(); j++)
     			{
     				Place p = placesArray.get(i).get(j);
-    				
+
     				if(p.getY() <= polygon.getExtremes().get(0) && polygon.getExtremes().get(0) - 0.000290 <= p.getY() )
 					{
 						startY = i;
@@ -173,7 +173,7 @@ public class GeoJsonToArrayConverter {
     				{
     					endX = j;
     				}
-    				
+
     			}
     		}
     		ArrayList<Equation> checkingEquations = new ArrayList<>();
@@ -198,23 +198,21 @@ public class GeoJsonToArrayConverter {
     	    			for(Equation e : polygon.getEquations())
     	    			{
     	    				if(ce.check(e)) hasCrossedAny = true;
-    	    				
+
     	    			}
     	    			if(!hasCrossedAny) isPointInside = false;
     	    		}
-    	    		if(isPointInside) 
+    	    		if(isPointInside)
     	    		{
     	    			p.emission =+ 1.0;
 						p.heatConduction = 0.5;
 						p.heatDecline = 0.1;
     	    		}
-    	    		
+
     			}
-    		}    		
+    		}
     	}
     	return placesArray;
     }
-    
-    
     
 }

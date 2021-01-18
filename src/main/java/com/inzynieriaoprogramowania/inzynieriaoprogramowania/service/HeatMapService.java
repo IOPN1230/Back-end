@@ -12,9 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import com.inzynieriaoprogramowania.inzynieriaoprogramowania.service.calculations.Place;
 
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -33,26 +38,24 @@ public class HeatMapService {
         this.geoJsonToArrayConverter = new GeoJsonToArrayConverter();
     }
 
-    public String getHeatMap(int id) {
+    public byte[] getHeatMap(int id, HttpServletRequest request) {
         try {
-            convertHeatMapSolutions();
+            return convertHeatMapSolutions(getBody(request));
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-        return "...przeliczam dla obiektu: " + id + "...zwracam bitmapę";
     }
 
-    public AreaMap convertHeatMapSolutions() throws JsonParseException, IOException {
+    public byte[] convertHeatMapSolutions(String requestBody) throws JsonParseException, IOException {
 
-
-        Resource resource = resourceLoader.getResource("classpath:map.json");
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); //If exists unknown element in JSON file, we can skip it without exception
-        JsonNode map = objectMapper.readTree(resource.getFile());
+        JsonNode map = objectMapper.readTree(requestBody);
         ArrayList<Point> pointsArray = geoJsonToArrayConverter.getAllPoints(map);
         ArrayList<Polygon> polygonsArray = geoJsonToArrayConverter.getAllPolygons(map);
-        
+
         //Dzielimy sobie mapke na kwadraty (obszary)
 		placesArray =  geoJsonToArrayConverter.createAreaMap();
 		
@@ -102,10 +105,15 @@ public class HeatMapService {
             }
         }*/
         SolutionsToBitmapConverter solutionsToBitmapConverter = new SolutionsToBitmapConverter(heatMapSolutionsTest);
-        solutionsToBitmapConverter.createBitmap();
+        BufferedImage bitmap = solutionsToBitmapConverter.createBitmap();
+
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        ImageIO.write(bitmap, "bmp", os);
+
+        return os.toByteArray();
         //Test of converter end
 
-        return areaMap;
+        //return new AreaMap(new Place[0][0], new HeatMapSolutions(new double[0][0]));
     }
     //Konwersja z arrayList na tablice dwuwymiarowa, wykorzystywane to bedzie wg preferencji obliczen
     public Place[][] convertArrayListToArray(ArrayList<ArrayList<Place>> placesTwoDimensionalArray)
@@ -123,5 +131,39 @@ public class HeatMapService {
     		i++;
     	}
     	return areaMap;
+    }
+
+    public static String getBody(HttpServletRequest request) throws IOException {
+
+        String body = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        BufferedReader bufferedReader = null;
+
+        try {
+            InputStream inputStream = request.getInputStream();
+            if (inputStream != null) {
+                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+                char[] charBuffer = new char[128];
+                int bytesRead = -1;
+                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+                    stringBuilder.append(charBuffer, 0, bytesRead);
+                }
+            } else {
+                stringBuilder.append("");
+            }
+        } catch (IOException ex) {
+            throw ex;
+        } finally {
+            if (bufferedReader != null) {
+                try {
+                    bufferedReader.close();
+                } catch (IOException ex) {
+                    throw ex;
+                }
+            }
+        }
+
+        body = stringBuilder.toString();
+        return body;
     }
 }
