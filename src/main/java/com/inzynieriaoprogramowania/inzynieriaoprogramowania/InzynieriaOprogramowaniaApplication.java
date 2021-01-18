@@ -17,8 +17,7 @@ import com.inzynieriaoprogramowania.inzynieriaoprogramowania.service.HeatMapServ
 public class InzynieriaOprogramowaniaApplication {
 
 	public static void main(String[] args) throws JsonParseException, Exception {
-		HeatMapController hmp = new HeatMapController();
-		hmp.getHeatMap(0, null);
+	
 		SpringApplication.run(InzynieriaOprogramowaniaApplication.class, args);
 	}
 

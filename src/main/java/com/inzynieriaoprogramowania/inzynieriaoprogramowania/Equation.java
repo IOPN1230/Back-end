@@ -37,10 +37,11 @@ public class Equation {
 		double x = (e.getB() - this.b ) / ( this.a - e.getA() );
 		if((x > e.getXStart() && x < e.getXEnd()) ||( x > e.getXEnd() && x < e.getXStart() ) ) 
 		{
-			if((x > this.xStart && x < this.xEnd ||( x > this.xEnd && x < this.xStart )))
+			if((x > this.xStart && x < this.xEnd ) ||( x > this.xEnd && x < this.xStart ))
 			{
 				isCrossed = true;
 			}	
+			
 		}
 		return isCrossed;
 	}
