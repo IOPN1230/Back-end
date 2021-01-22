@@ -6,12 +6,16 @@ public class Polygon {
 	ArrayList<Point> vertexes;
 	ArrayList<Equation> equations;
 	ArrayList<Double> extremes;
+	double emission, heatConduction, heatDecline;
 	
-	public Polygon(ArrayList<Point> vertexes) {
+	public Polygon(ArrayList<Point> vertexes, double emission, double heatConduction, double heatDecline) {
 		this.vertexes = new ArrayList<>();
 		equations = new ArrayList<>();
 		extremes = new ArrayList<Double>();
 		this.vertexes = vertexes;
+		this.emission = emission;
+		this.heatConduction = heatConduction;
+		this.heatDecline = heatDecline;
 		createEquations();
 		setExtremes();
 	}
@@ -52,5 +56,18 @@ public class Polygon {
 	public ArrayList<Double> getExtremes(){
 		return extremes;
 	}
+
+	public double getEmission() {
+		return emission;
+	}
+
+	public double getHeatConduction() {
+		return heatConduction;
+	}
+
+	public double getHeatDecline() {
+		return heatDecline;
+	}
+	
 
 }

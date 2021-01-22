@@ -59,16 +59,16 @@ public class GeoJsonToArrayConverter {
 
             if(type.asText().equals("Point"))
             {
+            	JsonNode properties = figure.path("properties");
             	JsonNode coordinates = figure.path("geometry").path("coordinates");
             	JsonNode x = coordinates.get(0);
             	JsonNode y = coordinates.get(1);
-            	points.add(new Point(x.asDouble(),y.asDouble()));
+            	Double emission = properties.get("emission").asDouble();
+            	Double heatConduction = properties.get("heatConducton").asDouble();
+            	Double heatDecline = properties.get("heatDecline").asDouble();
+            	points.add(new Point(x.asDouble(),y.asDouble(),emission,heatConduction,heatDecline));
             }
-            if(type.equals("Polygon"))
-            {
-            	JsonNode coordinates = figure.path("geometry").path("coordinates");
-            	
-            }
+           
             
         }
         return points;
@@ -82,7 +82,7 @@ public class GeoJsonToArrayConverter {
         JsonNode features = map.path("features");
         Iterator<JsonNode> featuresIterator = features.iterator();
         while(featuresIterator.hasNext()){
-
+        	vertexesArray.clear();
             JsonNode figure = featuresIterator.next();
             JsonNode type = figure.path("geometry").path("type");
             JsonNode geometry = figure.path("geometry");
@@ -90,16 +90,23 @@ public class GeoJsonToArrayConverter {
             {
            
             	JsonNode coordinates = geometry.path("coordinates").get(0);
-
+            	JsonNode properties = figure.path("properties");
+            	Double emission = (double) 0; 
+            	Double heatConduction = (double) 0;
+            	Double heatDecline = (double) 0;
             	Iterator<JsonNode> coordinatesIterator = coordinates.iterator();
             	for(int i= 0;i<coordinates.size();i++)
             	{
+           
             		double x = coordinates.get(i).get(0).asDouble();
             		double y = coordinates.get(i).get(1).asDouble();
-            		vertexesArray.add(new Point(x,y));
+            		emission = properties.get("emission").asDouble();
+                	heatConduction = properties.get("heatConducton").asDouble();
+                	heatDecline = properties.get("heatDecline").asDouble();
+            		vertexesArray.add(new Point(x,y,emission,heatConduction,heatDecline));
             	}
-
-                polygons.add(new Polygon(vertexesArray));
+            
+                polygons.add(new Polygon(vertexesArray,emission,heatConduction,heatDecline));
             }
 
 
@@ -136,9 +143,10 @@ public class GeoJsonToArrayConverter {
         				if(point.getY() < place.getY() && point.getY() > place.getY() - 0.000290 )
         				{
         					//Eksperymntalne ustawienie wartosci emisji na 1 w obszarze, w ktorym jest jakis punkt
-        					place.emission = 1.0;
-        					place.heatConduction = 0.5;
-        					place.heatDecline = 0.1;
+        					place.emission = point.getEmission();
+        					place.heatConduction = point.getHeatConduction();
+        					place.heatDecline = point.getHeatDecline();
+        				
         					//System.out.println("Punkt na "+ place.getX() + ", " + place.getY());
         				}
         			}
@@ -157,19 +165,19 @@ public class GeoJsonToArrayConverter {
     			{
     				Place p = placesArray.get(i).get(j);
 
-    				if(p.getY() <= polygon.getExtremes().get(0) && polygon.getExtremes().get(0) - 0.000290 <= p.getY() )
+    				if(p.getY() <= polygon.getExtremes().get(0) && polygon.getExtremes().get(0) - 0.000180 <= p.getY() )
 					{
 						startY = i;
 					}
-    				if(p.getX() >= polygon.getExtremes().get(1) && polygon.getExtremes().get(1) + 0.000180 >= p.getX() )
+    				if(p.getX() >= polygon.getExtremes().get(1) && polygon.getExtremes().get(1) + 0.000290 >= p.getX() )
     				{
     					startX = j;
     				}
-    				if(p.getY() >= polygon.getExtremes().get(2) && polygon.getExtremes().get(2) >= p.getY() - 0.000290)
+    				if(p.getY() >= polygon.getExtremes().get(2) && polygon.getExtremes().get(2) + 0.000180 >= p.getY())
 					{
 						endY = i;
 					}
-    				if(p.getX() <= polygon.getExtremes().get(3) && polygon.getExtremes().get(3) <= p.getX() + 0.000180)
+    				if(p.getX() <= polygon.getExtremes().get(3) && polygon.getExtremes().get(3) - 0.000290 <= p.getX())
     				{
     					endX = j;
     				}
@@ -178,14 +186,13 @@ public class GeoJsonToArrayConverter {
     		}
     		ArrayList<Equation> checkingEquations = new ArrayList<>();
     		//Na sztywno wpisana dziedzina X naszych rownan sprawdzajacych, ustawiona jest ona od 18 do 21 ( nasze dlugosci geograficzne)
-    		checkingEquations.add(new Equation(-1,0,18,21));
-    		checkingEquations.add(new Equation(-1,0,18,21));
-    		checkingEquations.add(new Equation(0,0,18,21));
-    		checkingEquations.add(new Equation(0,0,18,21));
-    		checkingEquations.add(new Equation(1,0,18,21));
-    		checkingEquations.add(new Equation(1,0,18,21));
-    		checkingEquations.add(new Equation(100,0,18,21));
-    		checkingEquations.add(new Equation(100,0,18,21));
+    		
+    		for(int i=0; i<360 ;i = i+8)
+    		{
+    			double radians = Math.toRadians(i);
+    			checkingEquations.add(new Equation(Math.tan(radians),0,18,21));
+        		checkingEquations.add(new Equation(Math.tan(radians),0,18,21));
+    		}
     		//Dla kazdego punktu w obszarze sprawdzaj czy sie znajduje
     		int counter = 0;
     		for(int yIterator = startY; yIterator < endY; yIterator ++)
@@ -195,23 +202,13 @@ public class GeoJsonToArrayConverter {
     				Place p = placesArray.get(yIterator).get(xIterator);
     				boolean isPointInside = true;
     				
-    				checkingEquations.get(0).setB(p);
-    				checkingEquations.get(0).setDomain(18,p.getX());
-    				checkingEquations.get(1).setB(p);
-    				checkingEquations.get(1).setDomain(p.getX(),21);
-    				checkingEquations.get(2).setB(p);
-    				checkingEquations.get(2).setDomain(18,p.getX());
-    				checkingEquations.get(3).setB(p);
-    				checkingEquations.get(3).setDomain(p.getX(),21);
-    				checkingEquations.get(4).setB(p);
-    				checkingEquations.get(4).setDomain(18,p.getX());
-    				checkingEquations.get(5).setB(p);
-    				checkingEquations.get(5).setDomain(p.getX(),21);
-    				checkingEquations.get(6).setB(p);
-    				checkingEquations.get(6).setDomain(18,p.getX());
-    				checkingEquations.get(7).setB(p);
-    				checkingEquations.get(7).setDomain(p.getX(),21);
-    				
+    				for(int i=0; i<checkingEquations.size();i++)
+    				{
+    					checkingEquations.get(i).setB(p);
+    					if(i % 2 == 0) checkingEquations.get(i).setDomain(18, p.getX());
+    					else checkingEquations.get(i).setDomain(p.getX(),21);
+    				}
+    			
     	    		
     	    		for(Equation ce : checkingEquations)
     	    		{
@@ -223,16 +220,17 @@ public class GeoJsonToArrayConverter {
     	    			}
     	    			if(!hasCrossedAny) isPointInside = false;
     	    		}
+    	    	
     	    		if(isPointInside)
     	    		{
-    	    			p.emission =+ 1;
-						p.heatConduction = 0.5;
-						p.heatDecline = 0.1;
+    	    			p.emission =+ polygon.getEmission();
+						p.heatConduction = polygon.getHeatConduction();
+						p.heatDecline = polygon.getHeatDecline();
     	    		}
 
     			}
     		
-    		}System.out.println(endX + " ,  " +endY);
+    		}
     	}
     	return placesArray;
     }

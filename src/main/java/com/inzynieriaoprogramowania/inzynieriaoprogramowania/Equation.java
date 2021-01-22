@@ -34,15 +34,19 @@ public class Equation {
 	}
 	public boolean check(Equation e) {
 		boolean isCrossed = false;
-		double x = (e.getB() - this.b ) / ( this.a - e.getA() );
-		if((x > e.getXStart() && x < e.getXEnd()) ||( x > e.getXEnd() && x < e.getXStart() ) ) 
+		if( this.a - e.getA() != 0)
 		{
-			if((x > this.xStart && x < this.xEnd ) ||( x > this.xEnd && x < this.xStart ))
+			double x = (e.getB() - this.b ) / ( this.a - e.getA() );
+			if((x >= e.getXStart() && x <= e.getXEnd()) ||( x >= e.getXEnd() && x <= e.getXStart() ) ) 
 			{
-				isCrossed = true;
-			}	
-			
+				if(x >= this.xStart && x <= this.xEnd )
+				{
+					isCrossed = true;
+				}
+				
+			}
 		}
+		
 		return isCrossed;
 	}
 	public void setDomain(double xStart, double xEnd) {

@@ -135,7 +135,7 @@ public class SolutionsToBitmapConverter {
         int[] res = arraylistToArray();
         bufferedImage.setRGB(0, 0, width, height, res, 0, width);
         try {
-            ImageIO.write(bufferedImage, "jpg", new File("--pathToFile--"));
+            ImageIO.write(bufferedImage, "jpg", new File("C:\\Users\\kwozn\\Documents\\Korki\\foto.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
