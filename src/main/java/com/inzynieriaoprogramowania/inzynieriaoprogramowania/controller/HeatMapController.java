@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping(
         value = "/api/heat-map",
         produces = MediaType.IMAGE_JPEG_VALUE
@@ -18,8 +19,9 @@ public class HeatMapController {
     @Autowired
     private HeatMapService heatMapService;
 
-    @GetMapping("/")
+    @PostMapping("/")
     public @ResponseBody byte[] getHeatMap(HttpServletRequest httpServletRequest) {
-        return heatMapService.getHeatMap(httpServletRequest);
+        byte[] res = heatMapService.getHeatMap(httpServletRequest);
+        return res;
     }
 }
