@@ -57,7 +57,7 @@ public class HeatMapService {
         ArrayList<Polygon> polygonsArray = geoJsonToArrayConverter.getAllPolygons(map);
 
         //Dzielimy sobie mapke na kwadraty (obszary)
-		placesArray =  geoJsonToArrayConverter.createAreaMap();
+		placesArray =  geoJsonToArrayConverter.createAreaMap(polygonsArray);
 		
 		//Stworzenie tablicy ze zmodyfikowanymi juz wartosciami emission itp
 		modifiedPlacesArray = geoJsonToArrayConverter.modifyPlaces(placesArray, pointsArray, polygonsArray);
