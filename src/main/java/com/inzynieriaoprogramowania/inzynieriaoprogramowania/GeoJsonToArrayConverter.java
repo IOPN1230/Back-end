@@ -33,7 +33,7 @@ public class GeoJsonToArrayConverter {
             	JsonNode x = coordinates.get(0);
             	JsonNode y = coordinates.get(1);
             	Double emission = properties.get("emission").asDouble();
-            	Double heatConduction = properties.get("heatConducton").asDouble();
+            	Double heatConduction = properties.get("heatConduction").asDouble();
             	Double heatDecline = properties.get("heatDecline").asDouble();
             	points.add(new Point(x.asDouble(),y.asDouble(),emission,heatConduction,heatDecline));
             }
