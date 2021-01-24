@@ -134,11 +134,11 @@ public class SolutionsToBitmapConverter {
         BufferedImage bufferedImage = new BufferedImage(this.width,this.height,BufferedImage.TYPE_INT_RGB);
         int[] res = arraylistToArray();
         bufferedImage.setRGB(0, 0, width, height, res, 0, width);
-        try {
+        /*try {
             ImageIO.write(bufferedImage, "jpg", new File("C:\\User\\piotr\\Documents\\foto.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
         return bufferedImage;
     }
 }
