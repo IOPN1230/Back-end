@@ -57,7 +57,7 @@ public class HeatMapService {
         ArrayList<Polygon> polygonsArray = geoJsonToArrayConverter.getAllPolygons(map);
 
         //Dzielimy sobie mapke na kwadraty (obszary)
-		placesArray =  geoJsonToArrayConverter.createAreaMap();
+		placesArray =  geoJsonToArrayConverter.createAreaMap(polygonsArray);
 		
 		//Stworzenie tablicy ze zmodyfikowanymi juz wartosciami emission itp
 		modifiedPlacesArray = geoJsonToArrayConverter.modifyPlaces(placesArray, pointsArray, polygonsArray);
@@ -73,12 +73,11 @@ public class HeatMapService {
         HeatMapAnalyser heatMapAnalyser = new HeatMapAnalyser(configuration);
 
         HeatMapSolutions heatMapSolutionsTest = heatMapAnalyser.calculateHeatMap(areaMap);
-
-        /*for(int i = 0; i < heatMapSolutionsTest.heatArray.length; i++){
+        for(int i = 0; i < heatMapSolutionsTest.heatArray.length; i++){
             for(int j = 0; j < heatMapSolutionsTest.heatArray[0].length; j++){
                 if(1 < heatMapSolutionsTest.heatArray[i][j]) System.out.println(heatMapSolutionsTest.heatArray[i][j]);
             }
-        }*/
+        }
         SolutionsToBitmapConverter solutionsToBitmapConverter = new SolutionsToBitmapConverter(heatMapSolutionsTest);
         BufferedImage bitmap = solutionsToBitmapConverter.createBitmap();
 

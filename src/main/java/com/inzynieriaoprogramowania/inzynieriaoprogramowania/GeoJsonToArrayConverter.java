@@ -11,40 +11,9 @@ public class GeoJsonToArrayConverter {
     //TODO: Add method which creates AreaMap
     //TODO: Add method which modifies Places
     //TODO: Add custom exception in case of wrong json file
-    public ArrayList<Shape> getAllFigures(JsonNode map) {
-        ArrayList<Shape> polygons = new ArrayList<>();
-        JsonNode features = map.path("features");
-        Iterator<JsonNode> featuresIterator = features.iterator();
-        while(featuresIterator.hasNext()){
-            JsonNode figure = featuresIterator.next();
-            JsonNode coordinates = figure.path("geometry").path("coordinates");
-            Iterator<JsonNode> coordinatesIterator = coordinates.iterator();
-            Shape shape = new Shape();
-            boolean isX = true;
-            while(coordinatesIterator.hasNext()){
-                JsonNode point = coordinatesIterator.next();
-                if(point.getNodeType().toString().equals("NUMBER")){
-                    if (isX){
-                        shape.getCoordinatesX().add(point.asDouble());
-                    }
-                    else{
-                        shape.getCoordinatesY().add(point.asDouble());
-                    }
-                    isX=!isX;
-                }
-                else{
-                    //System.out.println(point.getNodeType().toString());
-                    Iterator<JsonNode> it = point.elements();
-                    Double coordinateX = it.next().asDouble();
-                    Double coordinateY = it.next().asDouble();
-                    shape.getCoordinatesX().add(coordinateX);
-                    shape.getCoordinatesY().add(coordinateY);
-                }
-            }
-            polygons.add(shape);
-        }
-        return polygons;
-    }
+	static double X_CHANGE = 0.0000725;
+	static double Y_CHANGE = 0.000045;
+  
     
     public ArrayList<Point> getAllPoints(JsonNode map)
     {
@@ -64,7 +33,7 @@ public class GeoJsonToArrayConverter {
             	JsonNode x = coordinates.get(0);
             	JsonNode y = coordinates.get(1);
             	Double emission = properties.get("emission").asDouble();
-            	Double heatConduction = properties.get("heatConducton").asDouble();
+            	Double heatConduction = properties.get("heatConduction").asDouble();
             	Double heatDecline = properties.get("heatDecline").asDouble();
             	points.add(new Point(x.asDouble(),y.asDouble(),emission,heatConduction,heatDecline));
             }
@@ -100,9 +69,12 @@ public class GeoJsonToArrayConverter {
            
             		double x = coordinates.get(i).get(0).asDouble();
             		double y = coordinates.get(i).get(1).asDouble();
+            		try {
             		emission = properties.get("emission").asDouble();
                 	heatConduction = properties.get("heatConducton").asDouble();
                 	heatDecline = properties.get("heatDecline").asDouble();
+            		}
+            		catch(Exception e) {}
             		vertexesArray.add(new Point(x,y,emission,heatConduction,heatDecline));
             	}
             
@@ -114,14 +86,21 @@ public class GeoJsonToArrayConverter {
         return polygons;
     }
     
-    public ArrayList<ArrayList<Place>> createAreaMap() {
+    public ArrayList<ArrayList<Place>> createAreaMap(ArrayList<Polygon> polygons) {
+    	double startY = 0, startX= 0, endY= 0, endX= 0;
+    	
+		startY = polygons.get(0).getExtremes().get(0);
+		startX = polygons.get(0).getExtremes().get(1);
+		endY = polygons.get(0).getExtremes().get(2);
+		endX = polygons.get(0).getExtremes().get(3);
+    	
     	ArrayList<ArrayList<Place>> places = new ArrayList<ArrayList<Place>>();
     	
-    	for(double shiftY = 51.857411; shiftY > 51.693498 ; shiftY -= 0.000180)
+    	for(double shiftY = startY; shiftY > endY ; shiftY -= Y_CHANGE)
     	{
     		places.add(new ArrayList<Place>());
     		ArrayList<Place> current = places.get(places.size() - 1);
-    		for(double shiftX = 19.334416; shiftX < 19.592922; shiftX += 0.000290 )
+    		for(double shiftX = startX; shiftX < endX; shiftX += X_CHANGE )
     		{
     			current.add(new Place(0.0,0.5,0.1,shiftX,shiftY));
     		}
@@ -138,9 +117,9 @@ public class GeoJsonToArrayConverter {
     		{
     			for(Place place: places)
     			{
-    				if(point.getX() > place.getX() && point.getX() < place.getX() + 0.000180)
+    				if(point.getX() > place.getX() && point.getX() < place.getX() + X_CHANGE)
         			{
-        				if(point.getY() < place.getY() && point.getY() > place.getY() - 0.000290 )
+        				if(point.getY() < place.getY() && point.getY() > place.getY() - Y_CHANGE )
         				{
         					//Eksperymntalne ustawienie wartosci emisji na 1 w obszarze, w ktorym jest jakis punkt
         					place.emission = point.getEmission();
@@ -154,7 +133,7 @@ public class GeoJsonToArrayConverter {
     		}
     	}
     	
-    	for(Polygon polygon: polygonsArray)
+    	/*for(Polygon polygon: polygonsArray)
     	{
     		//System.out.println(polygon.getExtremes());
     		//Znajdz skrajne places
@@ -165,19 +144,19 @@ public class GeoJsonToArrayConverter {
     			{
     				Place p = placesArray.get(i).get(j);
 
-    				if(p.getY() <= polygon.getExtremes().get(0) && polygon.getExtremes().get(0) - 0.000180 <= p.getY() )
+    				if(p.getY() <= polygon.getExtremes().get(0) && polygon.getExtremes().get(0) - Y_CHANGE <= p.getY() )
 					{
 						startY = i;
 					}
-    				if(p.getX() >= polygon.getExtremes().get(1) && polygon.getExtremes().get(1) + 0.000290 >= p.getX() )
+    				if(p.getX() >= polygon.getExtremes().get(1) && polygon.getExtremes().get(1) + X_CHANGE >= p.getX() )
     				{
     					startX = j;
     				}
-    				if(p.getY() >= polygon.getExtremes().get(2) && polygon.getExtremes().get(2) + 0.000180 >= p.getY())
+    				if(p.getY() >= polygon.getExtremes().get(2) && polygon.getExtremes().get(2) + Y_CHANGE >= p.getY())
 					{
 						endY = i;
 					}
-    				if(p.getX() <= polygon.getExtremes().get(3) && polygon.getExtremes().get(3) - 0.000290 <= p.getX())
+    				if(p.getX() <= polygon.getExtremes().get(3) && polygon.getExtremes().get(3) - X_CHANGE <= p.getX())
     				{
     					endX = j;
     				}
@@ -223,7 +202,7 @@ public class GeoJsonToArrayConverter {
     	    	
     	    		if(isPointInside)
     	    		{
-    	    			p.emission =+ polygon.getEmission();
+    	    			p.emission += polygon.getEmission();
 						p.heatConduction = polygon.getHeatConduction();
 						p.heatDecline = polygon.getHeatDecline();
     	    		}
@@ -231,7 +210,7 @@ public class GeoJsonToArrayConverter {
     			}
     		
     		}
-    	}
+    	}*/
     	return placesArray;
     }
     

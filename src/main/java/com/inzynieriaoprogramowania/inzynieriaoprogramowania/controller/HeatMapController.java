@@ -12,7 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 @CrossOrigin(origins = "*")
 @RequestMapping(
         value = "/api/heat-map",
-        produces = MediaType.IMAGE_JPEG_VALUE
+        produces = MediaType.IMAGE_JPEG_VALUE,
+        method = RequestMethod.POST
 )
 public class HeatMapController {
 
