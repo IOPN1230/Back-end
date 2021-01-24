@@ -223,7 +223,7 @@ public class GeoJsonToArrayConverter {
     	    	
     	    		if(isPointInside)
     	    		{
-    	    			p.emission =+ polygon.getEmission();
+    	    			p.emission += polygon.getEmission();
 						p.heatConduction = polygon.getHeatConduction();
 						p.heatDecline = polygon.getHeatDecline();
     	    		}
