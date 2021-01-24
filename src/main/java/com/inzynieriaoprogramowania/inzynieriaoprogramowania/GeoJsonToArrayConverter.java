@@ -69,9 +69,12 @@ public class GeoJsonToArrayConverter {
            
             		double x = coordinates.get(i).get(0).asDouble();
             		double y = coordinates.get(i).get(1).asDouble();
+            		try {
             		emission = properties.get("emission").asDouble();
                 	heatConduction = properties.get("heatConducton").asDouble();
                 	heatDecline = properties.get("heatDecline").asDouble();
+            		}
+            		catch(Exception e) {}
             		vertexesArray.add(new Point(x,y,emission,heatConduction,heatDecline));
             	}
             
