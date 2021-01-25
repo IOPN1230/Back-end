@@ -21,8 +21,8 @@ public class HeatMapController {
     private HeatMapService heatMapService;
 
     @PostMapping("/")
-    public @ResponseBody byte[] getHeatMap(HttpServletRequest httpServletRequest) {
-        byte[] res = heatMapService.getHeatMap(httpServletRequest);
+    public @ResponseBody byte[] getHeatMap(@RequestBody String json) {
+        byte[] res = heatMapService.getHeatMap(json);
         return res;
     }
 }

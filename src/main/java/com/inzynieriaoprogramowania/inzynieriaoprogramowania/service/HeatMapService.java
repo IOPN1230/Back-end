@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import com.inzynieriaoprogramowania.inzynieriaoprogramowania.service.calculations.Place;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
@@ -38,9 +37,9 @@ public class HeatMapService {
         this.geoJsonToArrayConverter = new GeoJsonToArrayConverter();
     }
 
-    public byte[] getHeatMap(HttpServletRequest request) {
+    public byte[] getHeatMap(String body) {
         try {
-            return convertHeatMapSolutions(getBody(request));
+            return convertHeatMapSolutions(body);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -107,37 +106,37 @@ public class HeatMapService {
     	return areaMap;
     }
 
-    public static String getBody(HttpServletRequest request) throws IOException {
-
-        String body = null;
-        StringBuilder stringBuilder = new StringBuilder();
-        BufferedReader bufferedReader = null;
-
-        try {
-            InputStream inputStream = request.getInputStream();
-            if (inputStream != null) {
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-                char[] charBuffer = new char[128];
-                int bytesRead = -1;
-                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
-                    stringBuilder.append(charBuffer, 0, bytesRead);
-                }
-            } else {
-                stringBuilder.append("");
-            }
-        } catch (IOException ex) {
-            throw ex;
-        } finally {
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException ex) {
-                    throw ex;
-                }
-            }
-        }
-
-        body = stringBuilder.toString();
-        return body;
-    }
+//    public static String getBody(HttpServletRequest request) throws IOException {
+//
+//        String body = null;
+//        StringBuilder stringBuilder = new StringBuilder();
+//        BufferedReader bufferedReader = null;
+//
+//        try {
+//            InputStream inputStream = request.getInputStream();
+//            if (inputStream != null) {
+//                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+//                char[] charBuffer = new char[128];
+//                int bytesRead = -1;
+//                while ((bytesRead = bufferedReader.read(charBuffer)) > 0) {
+//                    stringBuilder.append(charBuffer, 0, bytesRead);
+//                }
+//            } else {
+//                stringBuilder.append("");
+//            }
+//        } catch (IOException ex) {
+//            throw ex;
+//        } finally {
+//            if (bufferedReader != null) {
+//                try {
+//                    bufferedReader.close();
+//                } catch (IOException ex) {
+//                    throw ex;
+//                }
+//            }
+//        }
+//
+//        body = stringBuilder.toString();
+//        return body;
+//    }
 }
