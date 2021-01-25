@@ -102,7 +102,7 @@ public class GeoJsonToArrayConverter {
     		ArrayList<Place> current = places.get(places.size() - 1);
     		for(double shiftX = startX; shiftX < endX; shiftX += X_CHANGE )
     		{
-    			current.add(new Place(0.0,0.5,0.1,shiftX,shiftY));
+    			current.add(new Place(0.1,0.5,0.1,shiftX,shiftY));
     		}
     	}
     	//System.out.print("Rozmiar kolumny: " + places.size() + ", Rozmiar wiersza: " + places.get(0).size());
@@ -122,7 +122,7 @@ public class GeoJsonToArrayConverter {
         				if(point.getY() < place.getY() && point.getY() > place.getY() - Y_CHANGE )
         				{
         					//Eksperymntalne ustawienie wartosci emisji na 1 w obszarze, w ktorym jest jakis punkt
-        					place.emission = point.getEmission();
+        					place.emission += point.getEmission();
         					place.heatConduction = point.getHeatConduction();
         					place.heatDecline = point.getHeatDecline();
         				
